@@ -1,0 +1,210 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+/* ── Tailwind v4 CSS-first theme ── */
+@theme {
+  --font-sans: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  /* Brand colors */
+  --color-brand-50:  #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-200: #bfdbfe;
+  --color-brand-300: #93c5fd;
+  --color-brand-400: #60a5fa;
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1d4ed8;
+  --color-brand-800: #1e40af;
+  --color-brand-900: #1e3a8a;
+
+  --color-violet-400: #c084fc;
+  --color-violet-500: #a855f7;
+  --color-violet-600: #9333ea;
+  --color-violet-700: #7e22ce;
+  --color-violet-800: #6b21a8;
+
+  --color-slate-950: #ffffff; /* White background */
+  --color-slate-900: #f8fafc; /* Slate-50 background */
+  --color-slate-800: #f1f5f9; /* Slate-100 card backgrounds */
+  --color-slate-700: #cbd5e1; /* Slate-300 borders */
+  --color-slate-600: #94a3b8; /* Slate-400 borders */
+  --color-slate-500: #64748b; /* Slate-500 neutral text */
+  --color-slate-400: #475569; /* Slate-600 readable secondary text */
+  --color-slate-300: #1e293b; /* Slate-800 readable text */
+  --color-slate-200: #0f172a; /* Slate-900 headers */
+  --color-slate-100: #020617; /* Slate-950 bold headers */
+
+  --color-emerald-400: #10b981;
+  --color-amber-400:  #f59e0b;
+}
+
+/* ── Base resets ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  background-color: #ffffff;
+  color: #1e293b;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f8fafc; }
+::-webkit-scrollbar-thumb { background: #2563eb; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #9333ea; }
+
+/* ── Custom animations ── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-14px); }
+}
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.5); }
+  50%       { box-shadow: 0 0 0 8px rgba(59,130,246,0); }
+}
+@keyframes orbFloat {
+  0%, 100% { transform: translateY(0)   translateX(0); }
+  33%       { transform: translateY(-20px) translateX(10px); }
+  66%       { transform: translateY(10px)  translateX(-10px); }
+}
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes progressFill {
+  from { width: 0; }
+}
+
+.animate-fade-up    { animation: fadeInUp 0.65s cubic-bezier(.4,0,.2,1) both; }
+.animate-fade-in    { animation: fadeIn   0.65s cubic-bezier(.4,0,.2,1) both; }
+.animate-float      { animation: float    6s ease-in-out infinite; }
+.animate-marquee    { animation: marqueeScroll 28s linear infinite; }
+.animate-pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
+.animate-spin-slow  { animation: spinSlow 20s linear infinite; }
+
+.delay-100 { animation-delay: .1s; }
+.delay-200 { animation-delay: .2s; }
+.delay-300 { animation-delay: .3s; }
+.delay-400 { animation-delay: .4s; }
+.delay-500 { animation-delay: .5s; }
+
+/* ── Gradient helpers (Tailwind v4 doesn't expose all arbitrary grads inline) ── */
+.grad-primary     { background: linear-gradient(135deg, #1d4ed8 0%, #7e22ce 100%); }
+.grad-primary-soft{ background: linear-gradient(135deg, #3b82f6 0%, #a855f7 100%); }
+.grad-blue-purple { background: linear-gradient(135deg, #2563eb 0%, #9333ea 50%, #7e22ce 100%); }
+.grad-dark        { background: linear-gradient(135deg, #f8fafc 0%, #dbeafe 100%); }
+
+.text-gradient {
+  background: linear-gradient(135deg, #2563eb 0%, #9333ea 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.text-gradient-white {
+  background: linear-gradient(135deg, #0f172a 0%, #2563eb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Glass card ── */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02);
+}
+.glass-hover:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(37, 99, 235, 0.2);
+  box-shadow: 0 10px 40px rgba(37, 99, 235, 0.05);
+}
+
+/* ── Progress bar animation ── */
+.progress-animated {
+  animation: progressFill 1.5s cubic-bezier(.4,0,.2,1) forwards;
+}
+
+/* ── Orbs ── */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+/* ── Light Theme Overrides & Global Fixes ── */
+
+/* Inputs, selects, and textareas styling */
+input, select, textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid rgba(15, 23, 42, 0.15) !important;
+}
+input::placeholder, textarea::placeholder {
+  color: #94a3b8 !important;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Redefine hover text behavior for links that would become white on white */
+.hover\:text-white:hover {
+  color: #1d4ed8 !important;
+}
+
+/* Redefine hover bg behavior for elements with hover:bg-white/5 or similar */
+[class*="hover:bg-white/"]:hover {
+  background-color: rgba(15, 23, 42, 0.04) !important;
+}
+[class*="bg-white/"] {
+  background-color: rgba(15, 23, 42, 0.02) !important;
+}
+
+/* Redefine white border utilities to be slate borders on light theme */
+[class*="border-white/"] {
+  border-color: rgba(15, 23, 42, 0.08) !important;
+}
+
+/* Redefine elements with text-white class to have dark contrast,
+   unless they are inside color-filled gradients/badges */
+h1.text-white, h2.text-white, h3.text-white, h4.text-white, h5.text-white, h6.text-white,
+p.text-white, span.text-white, li.text-white, strong.text-white, label.text-white {
+  color: #0f172a !important;
+}
+/* Restore white color for elements inside gradient backgrounds or colored elements */
+.grad-primary .text-white,
+.grad-primary-soft .text-white,
+.grad-blue-purple .text-white,
+.bg-blue-600 .text-white,
+.bg-violet-700 .text-white,
+button .text-white,
+a .text-white,
+.text-white.grad-primary,
+.text-white.grad-primary-soft,
+.text-white.grad-blue-purple,
+button.text-white,
+a.text-white {
+  color: #ffffff !important;
+}
+.grad-primary span,
+.grad-primary-soft span,
+.grad-blue-purple span {
+  color: #ffffff !important;
+}
