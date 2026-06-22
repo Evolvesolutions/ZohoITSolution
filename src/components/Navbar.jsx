@@ -17,6 +17,17 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const token = localStorage.getItem('authToken');
+  const role = localStorage.getItem('userRole');
+  const isAdmin = token && role === 'admin';
+  const isLoggedIn = !!token;
+
+  const handleAuthClick = () => {
+    if (isAdmin) navigate('/admin');
+    else if (isLoggedIn) navigate('/account');
+    else navigate('/login');
+  };
+
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 40);
@@ -44,8 +55,8 @@ export default function Navbar() {
             Z
           </div>
           <div className="flex flex-col leading-tight">
-            <span className="font-extrabold text-white text-base tracking-tight">ZOHO IT</span>
-            <span className="text-[10px] text-blue-400 tracking-widest uppercase font-medium">Solutions</span>
+            <span className="font-extrabold text-slate-100 text-base tracking-tight">ZOHO IT</span>
+            <span className="text-[10px] text-blue-600 tracking-widest uppercase font-medium">Solutions</span>
           </div>
         </Link>
 
@@ -78,6 +89,12 @@ export default function Navbar() {
           >
             Contact Us
           </Link>
+          <button
+            onClick={handleAuthClick}
+            className="px-5 py-2.5 text-sm font-semibold text-slate-300 border border-white/15 rounded-full hover:border-white/40 hover:text-white backdrop-blur-sm transition-all duration-200"
+          >
+            {isAdmin ? '⚙️ Dashboard' : isLoggedIn ? '👤 Account' : '🔐 Login'}
+          </button>
           <Link
             to="/courses"
             className="px-5 py-2.5 text-sm font-semibold text-white grad-primary rounded-full shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 hover:-translate-y-0.5 transition-all duration-200"
@@ -121,7 +138,13 @@ export default function Navbar() {
                 </li>
               );
             })}
-            <li className="pt-2 border-t border-white/8 mt-2">
+            <li className="pt-2 border-t border-white/8 mt-2 flex flex-col gap-2">
+              <button
+                onClick={() => { setMenuOpen(false); handleAuthClick(); }}
+                className="w-full py-3 text-sm font-semibold text-slate-300 border border-white/15 rounded-xl text-center hover:bg-white/5 transition-all"
+              >
+                {isAdmin ? '⚙️ Dashboard' : isLoggedIn ? '👤 Account' : '🔐 Login'}
+              </button>
               <Link
                 to="/courses"
                 onClick={() => setMenuOpen(false)}

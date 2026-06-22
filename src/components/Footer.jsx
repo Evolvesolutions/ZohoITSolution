@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 const quickLinks = [
   { label: 'Home', path: '/' },
@@ -10,21 +11,40 @@ const quickLinks = [
   { label: 'Contact', path: '/contact' },
 ];
 
-const courses = [
-  'Full Stack Development',
-  'AI & Machine Learning',
-  'Cloud & DevOps',
-  'Data Science',
-  'Mobile App Dev',
-  'Digital Marketing',
-  'Software Testing',
-  'Java Full Stack',
-];
-
-
+// Removed hardcoded courses array
 
 export default function Footer() {
   const year = new Date().getFullYear();
+  const [settings, setSettings] = useState({
+    companyName: 'ZOHO IT Solutions',
+    address: 'ZOHO IT Solutions Campus, Hyderabad, Telangana – 500001',
+    phone: '+91 93601 98417',
+    email: 'info@zohoitsolutions.com',
+    workingHours: 'Mon-Sat: 9:30 AM-6:30 PM'
+  });
+
+  const [dbCourses, setDbCourses] = useState([]);
+
+  useEffect(() => {
+    // Fetch settings
+    fetch('http://localhost:5000/api/settings/company')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data._id) setSettings(data);
+      })
+      .catch(err => console.error('Failed to load settings', err));
+
+    // Fetch courses
+    fetch('http://localhost:5000/api/courses')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          // Take top 6 courses for the footer
+          setDbCourses(data.slice(0, 6));
+        }
+      })
+      .catch(err => console.error('Failed to load courses', err));
+  }, []);
 
   return (
     <footer className="bg-slate-950 border-t border-white/[0.05]">
@@ -38,8 +58,8 @@ export default function Footer() {
                 Z
               </div>
               <div className="leading-tight">
-                <div className="font-extrabold text-white text-base">ZOHO IT</div>
-                <div className="text-[10px] text-blue-400 tracking-widest uppercase font-medium">Solutions</div>
+                <div className="font-extrabold text-white text-base uppercase tracking-wider">{settings.companyName.split(' ')[0] || 'ZOHO IT'}</div>
+                <div className="text-[10px] text-blue-400 tracking-widest uppercase font-medium">{settings.companyName.substring(settings.companyName.indexOf(' ') + 1) || 'Solutions'}</div>
               </div>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed mb-6 max-w-xs">
@@ -82,13 +102,13 @@ export default function Footer() {
           <div>
             <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Our Courses</h4>
             <ul className="space-y-2.5">
-              {courses.map((c) => (
-                <li key={c}>
+              {dbCourses.map((c) => (
+                <li key={c._id}>
                   <Link
                     to="/courses"
-                    className="text-sm text-slate-400 hover:text-blue-400 transition-colors duration-200 text-left hover:translate-x-1 transform inline-block"
+                    className="text-sm text-slate-400 hover:text-blue-400 transition-colors duration-200 text-left hover:translate-x-1 transform inline-block line-clamp-1"
                   >
-                    → {c}
+                    → {c.title}
                   </Link>
                 </li>
               ))}
@@ -101,25 +121,21 @@ export default function Footer() {
             <div className="space-y-4 text-sm text-slate-400">
               <div className="flex items-start gap-3">
                 <span className="mt-0.5 flex-shrink-0">📍</span>
-                <span>ZOHO IT Solutions Campus, Hyderabad, Telangana – 500001</span>
+                <span>{settings.address}</span>
               </div>
               <div className="flex items-center gap-3">
                 <span>📞</span>
-                <a href="tel:+919876543210" className="hover:text-blue-400 transition-colors">+91 98765 43210</a>
-              </div>
-              <div className="flex items-center gap-3">
-                <span>📞</span>
-                <a href="tel:+919876543211" className="hover:text-blue-400 transition-colors">+91 98765 43211</a>
+                <a href={`tel:${settings.phone.replace(/[^0-9+]/g, '')}`} className="hover:text-blue-400 transition-colors">{settings.phone}</a>
               </div>
               <div className="flex items-center gap-3">
                 <span>📧</span>
-                <a href="mailto:info@zohoitsolutions.com" className="hover:text-blue-400 transition-colors break-all">
-                  info@zohoitsolutions.com
+                <a href={`mailto:${settings.email}`} className="hover:text-blue-400 transition-colors break-all">
+                  {settings.email}
                 </a>
               </div>
               <div className="flex items-center gap-3">
                 <span>🕐</span>
-                <span>Mon – Sat: 9:00 AM – 7:00 PM</span>
+                <span>{settings.workingHours}</span>
               </div>
             </div>
 

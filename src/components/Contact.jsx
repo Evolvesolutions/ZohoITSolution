@@ -1,28 +1,4 @@
-import { useState } from 'react';
-
-const contactDetails = [
-  {
-    icon: '📞',
-    label: 'Phone',
-    value: '+91 98765 43210',
-    sub: 'Mon–Sat, 9 AM – 7 PM',
-    color: 'bg-blue-500/10 border-blue-500/20',
-  },
-  {
-    icon: '📧',
-    label: 'Email',
-    value: 'info@zohoitsolutions.com',
-    sub: 'We reply within 2 hours',
-    color: 'bg-violet-500/10 border-violet-500/20',
-  },
-  {
-    icon: '📍',
-    label: 'Location',
-    value: 'Hyderabad, Telangana',
-    sub: 'Visit our campus anytime',
-    color: 'bg-emerald-500/10 border-emerald-500/20',
-  },
-];
+import { useState, useEffect } from 'react';
 
 const socialLinks = [
   { icon: '📘', label: 'Facebook',  href: '#' },
@@ -37,6 +13,46 @@ export default function Contact() {
     name: '', email: '', phone: '', course: '', message: '',
   });
   const [sent, setSent] = useState(false);
+  
+  const [settings, setSettings] = useState({
+    address: 'ZOHO IT Solutions Campus, Hyderabad, Telangana – 500001',
+    phone: '+91 93601 98417',
+    email: 'info@zohoitsolutions.com',
+    workingHours: 'Mon-Sat: 9:30 AM-6:30 PM'
+  });
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/settings/company')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data._id) setSettings(data);
+      })
+      .catch(err => console.error('Failed to load settings', err));
+  }, []);
+
+  const contactDetails = [
+    {
+      icon: '📞',
+      label: 'Phone',
+      value: settings.phone,
+      sub: settings.workingHours,
+      color: 'bg-blue-500/10 border-blue-500/20',
+    },
+    {
+      icon: '📧',
+      label: 'Email',
+      value: settings.email,
+      sub: 'We reply within 2 hours',
+      color: 'bg-violet-500/10 border-violet-500/20',
+    },
+    {
+      icon: '📍',
+      label: 'Location',
+      value: settings.address,
+      sub: 'Visit our campus anytime',
+      color: 'bg-emerald-500/10 border-emerald-500/20',
+    },
+  ];
 
   const handleSubmit = (e) => {
     e.preventDefault();

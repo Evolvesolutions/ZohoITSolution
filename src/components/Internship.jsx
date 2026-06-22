@@ -64,6 +64,37 @@ function ProgressBar({ label, pct }) {
 }
 
 export default function Internship() {
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', college: '', domain: '' });
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleApply = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('http://localhost:5000/api/applications/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+        setTimeout(() => {
+          setSubmitted(false);
+          setShowForm(false);
+          setFormData({ name: '', email: '', phone: '', college: '', domain: '' });
+        }, 3000);
+      } else {
+        alert("Failed to submit application. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting application:", error);
+      alert("An error occurred while submitting the application.");
+    }
+  };
+
   return (
     <section id="internship" className="relative py-28 overflow-hidden"
       style={{ background: 'linear-gradient(180deg, #020617 0%, #0f172a 100%)' }}>
@@ -106,7 +137,7 @@ export default function Internship() {
             <div className="flex flex-wrap gap-4">
               <button
                 id="intern-apply-btn"
-                onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => setShowForm(true)}
                 className="px-7 py-3.5 grad-primary text-white font-bold rounded-full shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 hover:-translate-y-0.5 transition-all duration-300 text-sm"
               >
                 🚀 Apply for Internship
@@ -147,6 +178,62 @@ export default function Internship() {
           </div>
         </div>
       </div>
+
+      {/* Internship Application Modal */}
+      {showForm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+          <div className="glass w-full max-w-lg rounded-3xl p-8 border border-white/[0.1] relative animate-fade-up">
+            <button 
+              onClick={() => setShowForm(false)}
+              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+            >
+              ✕
+            </button>
+            <h3 className="text-2xl font-bold text-white mb-2">Internship Application</h3>
+            <p className="text-sm text-slate-400 mb-6">Fill in your details to apply for our internship program.</p>
+            
+            {submitted ? (
+              <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-semibold text-center">
+                ✅ Application submitted successfully! We will contact you soon.
+              </div>
+            ) : (
+              <form onSubmit={handleApply} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wide">Full Name *</label>
+                  <input required type="text" value={formData.name} onChange={e=>setFormData({...formData, name: e.target.value})} className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/[0.1] text-white text-sm focus:border-blue-500/50 focus:outline-none transition-colors" placeholder="John Doe" />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wide">Email *</label>
+                    <input required type="email" value={formData.email} onChange={e=>setFormData({...formData, email: e.target.value})} className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/[0.1] text-white text-sm focus:border-blue-500/50 focus:outline-none transition-colors" placeholder="john@email.com" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wide">Phone *</label>
+                    <input required type="tel" value={formData.phone} onChange={e=>setFormData({...formData, phone: e.target.value})} className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/[0.1] text-white text-sm focus:border-blue-500/50 focus:outline-none transition-colors" placeholder="+91 90000 00000" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wide">College / University *</label>
+                  <input required type="text" value={formData.college} onChange={e=>setFormData({...formData, college: e.target.value})} className="w-full px-4 py-2.5 rounded-xl bg-slate-800/50 border border-white/[0.1] text-white text-sm focus:border-blue-500/50 focus:outline-none transition-colors" placeholder="Your College Name" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wide">Internship Domain *</label>
+                  <select required value={formData.domain} onChange={e=>setFormData({...formData, domain: e.target.value})} className="w-full px-4 py-2.5 rounded-xl bg-slate-800 border border-white/[0.1] text-slate-300 text-sm focus:border-blue-500/50 focus:outline-none transition-colors">
+                    <option value="">Select Domain</option>
+                    <option value="Java Full Stack">Java Full Stack</option>
+                    <option value="Python Full Stack">Python Full Stack</option>
+                    <option value="Web Development">Web Development</option>
+                    <option value="Data Analytics">Data Analytics</option>
+                  </select>
+                </div>
+                <button type="submit" className="w-full py-3 mt-4 grad-primary text-white font-bold rounded-xl shadow-lg shadow-blue-600/25 hover:-translate-y-0.5 transition-all duration-300">
+                  Submit Application
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

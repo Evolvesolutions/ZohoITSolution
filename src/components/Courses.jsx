@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import EnrollmentModal from './EnrollmentModal';
 
 const courses = [
@@ -89,8 +89,54 @@ const courses = [
 ];
 
 export default function Courses() {
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All');
   const [modal, setModal] = useState({ open: false, name: '' });
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/courses/');
+        if (response.ok) {
+          const data = await response.json();
+          // Map backend data to UI format
+          const formattedCourses = data.map((c, i) => {
+            const banners = [
+              'from-blue-600/40 to-cyan-600/40',
+              'from-violet-600/40 to-purple-600/40',
+              'from-sky-600/40 to-blue-600/40',
+              'from-emerald-600/40 to-teal-600/40',
+              'from-cyan-600/40 to-indigo-600/40',
+              'from-pink-600/40 to-rose-600/40',
+            ];
+            const icons = ['⚛️', '🤖', '☁️', '📊', '📱', '🌐'];
+            return {
+              id: c.id,
+              icon: icons[i % icons.length],
+              banner: banners[i % banners.length],
+              title: c.title,
+              rating: 4.8, reviews: '1.2k', // Default placeholder
+              duration: 'Self-paced', mode: 'Online',
+              level: 'All Levels',
+              desc: c.description,
+              price: `₹${parseFloat(c.price).toLocaleString('en-IN')}`,
+              originalPrice: '',
+              badge: '✨ New',
+              badgeColor: 'bg-blue-500/20 text-blue-300 border-blue-400/30',
+              tags: ['Course'],
+            };
+          });
+          setCourses(formattedCourses);
+        }
+      } catch (error) {
+        console.error("Failed to fetch courses:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourses();
+  }, []);
 
   const filters = ['All', 'Beginner', 'Intermediate'];
   const filtered = filter === 'All' ? courses : courses.filter(c => c.level === filter);
@@ -135,7 +181,7 @@ export default function Courses() {
                   className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
                     filter === f
                       ? 'grad-primary text-white shadow-lg shadow-blue-600/30'
-                      : 'text-slate-400 border border-white/10 hover:text-white hover:border-white/25'
+                      : 'text-slate-300 border border-white/10 hover:text-white hover:border-white/25'
                   }`}
                 >
                   {f}
@@ -145,65 +191,71 @@ export default function Courses() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((c, i) => (
-              <div
-                key={i}
-                id={`course-card-${i}`}
-                className="glass rounded-3xl overflow-hidden border border-white/[0.07] hover:border-blue-500/30 transition-all duration-300 group hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-500/10 flex flex-col"
-              >
-                {/* Banner */}
-                <div className={`h-28 bg-gradient-to-br ${c.banner} flex items-center justify-between px-6 relative overflow-hidden`}>
-                  <span className="text-5xl group-hover:scale-110 transition-transform duration-300">{c.icon}</span>
-                  <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${c.badgeColor}`}>
-                    {c.badge}
-                  </span>
-                  {/* shimmer */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.06) 60%, transparent 70%)' }} />
-                </div>
+            {loading ? (
+              <div className="col-span-full text-center text-slate-400 py-10">Loading courses...</div>
+            ) : filtered.length === 0 ? (
+              <div className="col-span-full text-center text-slate-400 py-10">No courses available. Check back later!</div>
+            ) : (
+              filtered.map((c, i) => (
+                <div
+                  key={i}
+                  id={`course-card-${i}`}
+                  className="glass rounded-3xl overflow-hidden border border-white/[0.07] hover:border-blue-500/30 transition-all duration-300 group hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-500/10 flex flex-col"
+                >
+                  {/* Banner */}
+                  <div className={`h-28 bg-gradient-to-br ${c.banner} flex items-center justify-between px-6 relative overflow-hidden`}>
+                    <span className="text-5xl group-hover:scale-110 transition-transform duration-300">{c.icon}</span>
+                    <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${c.badgeColor}`}>
+                      {c.badge}
+                    </span>
+                    {/* shimmer */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.06) 60%, transparent 70%)' }} />
+                  </div>
 
-                {/* Body */}
-                <div className="p-6 flex flex-col flex-1">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="text-base font-bold text-white leading-tight flex-1 mr-3">{c.title}</h3>
-                    <div className="flex items-center gap-1 text-amber-400 text-xs font-bold whitespace-nowrap">
-                      ⭐ {c.rating}
-                      <span className="text-slate-500 font-normal">({c.reviews})</span>
+                  {/* Body */}
+                  <div className="p-6 flex flex-col flex-1">
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="text-base font-bold text-white leading-tight flex-1 mr-3">{c.title}</h3>
+                      <div className="flex items-center gap-1 text-amber-400 text-xs font-bold whitespace-nowrap">
+                        ⭐ {c.rating}
+                        <span className="text-slate-500 font-normal">({c.reviews})</span>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3 mb-3 text-xs text-slate-400">
+                      <span>⏱ {c.duration}</span>
+                      <span>🖥 {c.mode}</span>
+                      <span>📈 {c.level}</span>
+                    </div>
+
+                    <p className="text-sm text-slate-200 leading-relaxed mb-4 flex-1 line-clamp-3">{c.desc}</p>
+
+                    <div className="flex flex-wrap gap-1.5 mb-5">
+                      {c.tags.map((t, j) => (
+                        <span key={j} className="px-2.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] font-medium">
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="flex items-center justify-between pt-4 border-t border-white/[0.06]">
+                      <div>
+                        <div className="text-xl font-black text-gradient">{c.price}</div>
+                        {c.originalPrice && <div className="text-xs text-slate-500 line-through">{c.originalPrice}</div>}
+                      </div>
+                      <button
+                        id={`enroll-btn-${i}`}
+                        onClick={() => openEnroll(c.title)}
+                        className="px-5 py-2.5 grad-primary text-white text-sm font-bold rounded-full shadow-md shadow-blue-600/25 hover:shadow-blue-600/50 hover:-translate-y-0.5 transition-all duration-200"
+                      >
+                        Enroll Now
+                      </button>
                     </div>
                   </div>
-
-                  <div className="flex gap-3 mb-3 text-xs text-slate-500">
-                    <span>⏱ {c.duration}</span>
-                    <span>🖥 {c.mode}</span>
-                    <span>📈 {c.level}</span>
-                  </div>
-
-                  <p className="text-sm text-slate-400 leading-relaxed mb-4 flex-1">{c.desc}</p>
-
-                  <div className="flex flex-wrap gap-1.5 mb-5">
-                    {c.tags.map((t, j) => (
-                      <span key={j} className="px-2.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] font-medium">
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="flex items-center justify-between pt-4 border-t border-white/[0.06]">
-                    <div>
-                      <div className="text-xl font-black text-gradient">{c.price}</div>
-                      <div className="text-xs text-slate-500 line-through">{c.originalPrice}</div>
-                    </div>
-                    <button
-                      id={`enroll-btn-${i}`}
-                      onClick={() => openEnroll(c.title)}
-                      className="px-5 py-2.5 grad-primary text-white text-sm font-bold rounded-full shadow-md shadow-blue-600/25 hover:shadow-blue-600/50 hover:-translate-y-0.5 transition-all duration-200"
-                    >
-                      Enroll Now
-                    </button>
-                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
 
           {/* Bottom CTA */}

@@ -1,6 +1,7 @@
+import { useNavigate } from 'react-router-dom';
+
 export default function Hero() {
-  const scrollTo = (id) =>
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  const navigate = useNavigate();
 
   const cards = [
     { icon: '💻', title: 'Software Dev', sub: 'Custom Solutions' },
@@ -67,15 +68,16 @@ export default function Hero() {
             <div className="animate-fade-up delay-300 flex flex-wrap gap-4 mb-12">
               <button
                 id="hero-enroll-btn"
-                onClick={() => scrollTo('courses')}
+                onClick={() => navigate('/courses')}
                 className="flex items-center gap-2 px-8 py-4 grad-primary text-white font-bold rounded-full shadow-xl shadow-blue-600/30 hover:shadow-blue-600/50 hover:-translate-y-1 transition-all duration-300 text-base"
               >
                 🚀 Enroll Now
               </button>
               <button
                 id="hero-contact-btn"
-                onClick={() => scrollTo('contact')}
-                className="flex items-center gap-2 px-8 py-4 text-white font-bold rounded-full border border-white/20 backdrop-blur-sm hover:border-white/50 hover:bg-white/5 hover:-translate-y-1 transition-all duration-300 text-base"
+                onClick={() => navigate('/contact')}
+                style={{ backgroundColor: '#ffffff', color: '#0f172a' }}
+                className="flex items-center gap-2 px-8 py-4 font-bold rounded-full shadow-lg hover:-translate-y-1 transition-all duration-300 text-base border border-slate-200"
               >
                 📞 Contact Us
               </button>
