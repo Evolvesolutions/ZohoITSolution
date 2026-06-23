@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_URL } from '../config';
 
 const socialLinks = [
   { icon: '📘', label: 'Facebook',  href: '#' },
@@ -22,7 +23,7 @@ export default function Contact() {
   });
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/settings/company')
+    fetch(`${API_URL}/api/settings/company`)
       .then(res => res.json())
       .then(data => {
         if (data && data._id) setSettings(data);
@@ -54,11 +55,25 @@ export default function Contact() {
     },
   ];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSent(true);
-    setTimeout(() => setSent(false), 5000);
-    setForm({ name: '', email: '', phone: '', course: '', message: '' });
+    try {
+      const response = await fetch(`${API_URL}/api/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
+      });
+      if (response.ok) {
+        setSent(true);
+        setTimeout(() => setSent(false), 5000);
+        setForm({ name: '', email: '', phone: '', course: '', message: '' });
+      } else {
+        alert('Failed to send message. Please try again later.');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      alert('Error sending message.');
+    }
   };
 
   return (

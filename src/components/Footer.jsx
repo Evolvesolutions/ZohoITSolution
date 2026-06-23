@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { API_URL } from '../config';
 import { useState, useEffect } from 'react';
 
 const quickLinks = [
@@ -27,7 +28,7 @@ export default function Footer() {
 
   useEffect(() => {
     // Fetch settings
-    fetch('http://localhost:5000/api/settings/company')
+    fetch(`${API_URL}/api/settings/company`)
       .then(res => res.json())
       .then(data => {
         if (data && data._id) setSettings(data);
@@ -35,7 +36,7 @@ export default function Footer() {
       .catch(err => console.error('Failed to load settings', err));
 
     // Fetch courses
-    fetch('http://localhost:5000/api/courses')
+    fetch(`${API_URL}/api/courses`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {

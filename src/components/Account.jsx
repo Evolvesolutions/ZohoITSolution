@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
 
 export default function Account() {
@@ -25,7 +26,7 @@ export default function Account() {
   const fetchMyApplications = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/applications/my-applications', {
+      const res = await fetch(`${API_URL}/api/applications/my-applications`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { API_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
 import '../App.css';
 
@@ -21,7 +22,7 @@ export default function Auth() {
       : { name: form.name, email: form.email, password: form.password };
 
     try {
-      const res = await fetch(`http://localhost:5000${endpoint}`, {
+      const res = await fetch(`${API_URL}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),

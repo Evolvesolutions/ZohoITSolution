@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { API_URL } from '../config';
 
 const features = [
   {
@@ -71,7 +72,7 @@ export default function Internship() {
   const handleApply = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/applications/', {
+      const response = await fetch(`${API_URL}/api/applications/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

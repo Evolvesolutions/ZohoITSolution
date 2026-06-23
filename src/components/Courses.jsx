@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_URL } from '../config';
 import EnrollmentModal from './EnrollmentModal';
 
 const courses = [
@@ -97,7 +98,7 @@ export default function Courses() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/courses/');
+        const response = await fetch(`${API_URL}/api/courses/`);
         if (response.ok) {
           const data = await response.json();
           // Map backend data to UI format

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
 import '../App.css';
 
@@ -11,11 +12,12 @@ export default function Admin() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [courses, setCourses] = useState([]);
   const [applications, setApplications] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
-  
+
   // Dashboard Stats
-  const [stats, setStats] = useState({ users: 0, interns: 0, courses: 0, pendingInterns: 0, acceptedInterns: 0 });
-  
+  const [stats, setStats] = useState({ users: 0, interns: 0, courses: 0, pendingInterns: 0, acceptedInterns: 0, messages: 0, unreadMessages: 0 });
+
   // Forms
   const [newCourse, setNewCourse] = useState({ title: '', description: '', price: '' });
   const [settings, setSettings] = useState({ companyName: '', address: '', phone: '', email: '', workingHours: '' });
@@ -35,18 +37,20 @@ export default function Admin() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [coursesRes, appsRes, statsRes, settingsRes] = await Promise.all([
-        fetch('http://localhost:5000/api/courses'),
-        fetch('http://localhost:5000/api/applications', { headers: authHeaders }),
-        fetch('http://localhost:5000/api/admin/stats', { headers: authHeaders }),
-        fetch('http://localhost:5000/api/settings/company')
+      const [coursesRes, appsRes, statsRes, settingsRes, msgsRes] = await Promise.all([
+        fetch(`${API_URL}/api/courses`),
+        fetch(`${API_URL}/api/applications`, { headers: authHeaders }),
+        fetch(`${API_URL}/api/admin/stats`, { headers: authHeaders }),
+        fetch(`${API_URL}/api/settings/company`),
+        fetch(`${API_URL}/api/messages`, { headers: authHeaders })
       ]);
-      const [coursesData, appsData, statsData, settingsData] = await Promise.all([
-        coursesRes.json(), appsRes.json(), statsRes.json(), settingsRes.json()
+      const [coursesData, appsData, statsData, settingsData, msgsData] = await Promise.all([
+        coursesRes.json(), appsRes.json(), statsRes.json(), settingsRes.json(), msgsRes.json()
       ]);
-      
+
       setCourses(Array.isArray(coursesData) ? coursesData : []);
       setApplications(Array.isArray(appsData) ? appsData : []);
+      setMessages(Array.isArray(msgsData) ? msgsData : []);
       setStats(statsData);
       if (settingsData) setSettings(settingsData);
     } catch (error) {
@@ -70,7 +74,7 @@ export default function Admin() {
   const handleAddCourse = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/courses', {
+      const res = await fetch(`${API_URL}/api/courses`, {
         method: 'POST',
         headers: authHeaders,
         body: JSON.stringify(newCourse),
@@ -90,14 +94,14 @@ export default function Admin() {
   const handleDeleteCourse = async (id) => {
     if (!confirm('Delete this course?')) return;
     try {
-      await fetch(`http://localhost:5000/api/courses/${id}`, { method: 'DELETE', headers: authHeaders });
+      await fetch(`${API_URL}/api/courses/${id}`, { method: 'DELETE', headers: authHeaders });
       fetchData();
     } catch { alert('Failed to delete'); }
   };
 
   const handleStatusChange = async (id, status) => {
     try {
-      await fetch(`http://localhost:5000/api/applications/${id}/status`, {
+      await fetch(`${API_URL}/api/applications/${id}/status`, {
         method: 'PUT',
         headers: authHeaders,
         body: JSON.stringify({ status }),
@@ -106,10 +110,37 @@ export default function Admin() {
     } catch { alert('Failed to update status'); }
   };
 
+  const handleMessageStatusChange = async (id, status) => {
+    try {
+      await fetch(`${API_URL}/api/messages/${id}/status`, {
+        method: 'PUT',
+        headers: authHeaders,
+        body: JSON.stringify({ status }),
+      });
+      fetchData();
+    } catch { alert('Failed to update message status'); }
+  };
+
+  const handleDeleteApplication = async (id) => {
+    if (!confirm('Delete this application?')) return;
+    try {
+      await fetch(`${API_URL}/api/applications/${id}`, { method: 'DELETE', headers: authHeaders });
+      fetchData();
+    } catch { alert('Failed to delete application'); }
+  };
+
+  const handleDeleteMessage = async (id) => {
+    if (!confirm('Delete this message?')) return;
+    try {
+      await fetch(`${API_URL}/api/messages/${id}`, { method: 'DELETE', headers: authHeaders });
+      fetchData();
+    } catch { alert('Failed to delete message'); }
+  };
+
   const handleSaveSettings = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/settings/company', {
+      const res = await fetch(`${API_URL}/api/settings/company`, {
         method: 'PUT',
         headers: authHeaders,
         body: JSON.stringify(settings),
@@ -133,10 +164,18 @@ export default function Admin() {
   if (!token || role !== 'admin') return null;
 
   return (
-    <div className="min-h-screen flex bg-slate-950 text-white font-sans selection:bg-blue-500/30">
+    <div className="min-h-screen flex bg-slate-900 text-white font-sans selection:bg-blue-500/30 relative overflow-hidden">
       
+      {/* Background elements */}
+      <div className="absolute inset-0 pointer-events-none z-0 fixed">
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'linear-gradient(rgba(59,130,246,1) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,1) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+        <div className="orb w-[600px] h-[600px] bg-blue-600/20 -top-40 -right-40 animate-spin-slow opacity-20" />
+        <div className="orb w-[500px] h-[500px] bg-violet-700/20 bottom-0 -left-40 opacity-15" style={{animation:'orbFloat 14s ease-in-out infinite reverse'}} />
+        <div className="orb w-[300px] h-[300px] bg-blue-400/10 top-1/2 left-1/3 opacity-10" style={{animation:'orbFloat 10s ease-in-out infinite'}} />
+      </div>
+
       {/* Sidebar */}
-      <div className="w-64 bg-slate-900 border-r border-white/[0.05] flex flex-col fixed h-full z-10">
+      <div className="w-64 bg-slate-900/40 backdrop-blur-2xl border-r border-white/[0.05] flex flex-col fixed h-full z-20">
         <div className="p-6 border-b border-white/[0.05]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 grad-primary rounded-xl flex items-center justify-center text-white font-black text-lg shadow-lg">Z</div>
@@ -146,7 +185,7 @@ export default function Admin() {
             </div>
           </div>
         </div>
-        
+
         <div className="flex-1 py-6 px-4 space-y-2 overflow-y-auto">
           <button
             onClick={() => navigate('/')}
@@ -154,23 +193,23 @@ export default function Admin() {
           >
             <span className="text-lg">🏠</span> Back to Website
           </button>
-          
+
           <div className="h-px bg-white/[0.05] w-full mb-4"></div>
 
           {[
             { id: 'dashboard', label: 'Dashboard', icon: '📊' },
             { id: 'courses', label: 'Courses', icon: '📚' },
             { id: 'applications', label: 'Intern Applications', icon: '📋' },
+            { id: 'messages', label: 'Messages', icon: '📨' },
             { id: 'settings', label: 'Company Info', icon: '⚙️' },
           ].map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                activeTab === tab.id 
-                ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20 shadow-lg shadow-blue-500/5' 
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === tab.id
+                ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20 shadow-lg shadow-blue-500/5'
                 : 'text-slate-400 hover:text-white hover:bg-white/[0.02]'
-              }`}
+                }`}
             >
               <span className="text-lg">{tab.icon}</span> {tab.label}
             </button>
@@ -182,7 +221,7 @@ export default function Admin() {
             <p className="text-xs text-slate-400 mb-1">Logged in as:</p>
             <p className="text-sm font-bold text-white truncate">{userName}</p>
           </div>
-          <button 
+          <button
             onClick={handleLogout}
             className="w-full py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-bold hover:bg-red-500/20 transition-all"
           >
@@ -192,11 +231,11 @@ export default function Admin() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 ml-64 p-8 min-h-screen" style={{ background: 'linear-gradient(180deg, #020617 0%, #0f172a 100%)' }}>
+      <div className="flex-1 ml-64 p-8 min-h-screen relative z-10">
         
         {/* Header */}
-        <div className="mb-10">
-          <h1 className="text-3xl font-black text-white capitalize">{activeTab.replace(/([A-Z])/g, ' $1').trim()}</h1>
+        <div className="mb-10 animate-fade-up">
+          <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-400 capitalize">{activeTab.replace(/([A-Z])/g, ' $1').trim()}</h1>
           <p className="text-slate-400 text-sm mt-2">Manage your institution's data and settings.</p>
         </div>
 
@@ -206,7 +245,7 @@ export default function Admin() {
           </div>
         ) : (
           <div className="max-w-6xl">
-            
+
             {/* Dashboard Tab */}
             {activeTab === 'dashboard' && (
               <div className="space-y-8">
@@ -218,7 +257,7 @@ export default function Admin() {
                     <p className="text-slate-400 text-sm font-bold uppercase tracking-widest mb-2">Total Users</p>
                     <h3 className="text-4xl font-black text-white">{stats.users}</h3>
                   </div>
-                  
+
                   <div className="glass p-6 rounded-2xl border border-blue-500/20 relative overflow-hidden group bg-blue-500/5">
                     <div className="absolute top-0 right-0 p-4 opacity-10 transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform">
                       <span className="text-8xl">📋</span>
@@ -237,6 +276,17 @@ export default function Admin() {
                     </div>
                     <p className="text-slate-400 text-sm font-bold uppercase tracking-widest mb-2">Active Courses</p>
                     <h3 className="text-4xl font-black text-white">{stats.courses}</h3>
+                  </div>
+
+                  <div className="glass p-6 rounded-2xl border border-emerald-500/20 relative overflow-hidden group bg-emerald-500/5">
+                    <div className="absolute top-0 right-0 p-4 opacity-10 transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform">
+                      <span className="text-8xl">📨</span>
+                    </div>
+                    <p className="text-emerald-400 text-sm font-bold uppercase tracking-widest mb-2">Messages</p>
+                    <h3 className="text-4xl font-black text-white">{stats.messages || 0}</h3>
+                    <div className="mt-4 flex gap-4 text-sm">
+                      <span className="text-amber-400 font-semibold">{stats.unreadMessages || 0} Unread</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -287,22 +337,22 @@ export default function Admin() {
                     {courses.length === 0 ? (
                       <div className="md:col-span-2 text-center text-slate-500 py-16 glass rounded-2xl border border-white/[0.06]">No courses yet. Add one above!</div>
                     ) : courses.map(course => (
-                    <div key={course._id} className="glass p-5 rounded-2xl border border-white/[0.07] hover:border-blue-500/30 transition-all group flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <h4 className="font-bold text-white text-lg mb-1">{course.title}</h4>
-                        <p className="text-slate-400 text-sm line-clamp-2">{course.description}</p>
+                      <div key={course._id} className="glass p-5 rounded-2xl border border-white/[0.07] hover:border-blue-500/30 transition-all group flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <h4 className="font-bold text-white text-lg mb-1">{course.title}</h4>
+                          <p className="text-slate-400 text-sm line-clamp-2">{course.description}</p>
+                        </div>
+                        <div className="flex flex-col items-end gap-3 shrink-0">
+                          <span className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                            ₹{Number(course.price).toLocaleString('en-IN')}
+                          </span>
+                          <button onClick={() => handleDeleteCourse(course._id)}
+                            className="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-xs font-bold hover:bg-red-500/20 transition-colors opacity-0 group-hover:opacity-100">
+                            Delete
+                          </button>
+                        </div>
                       </div>
-                      <div className="flex flex-col items-end gap-3 shrink-0">
-                        <span className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
-                          ₹{Number(course.price).toLocaleString('en-IN')}
-                        </span>
-                        <button onClick={() => handleDeleteCourse(course._id)}
-                          className="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-xs font-bold hover:bg-red-500/20 transition-colors opacity-0 group-hover:opacity-100">
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
                   </div>
                 </div>
               </div>
@@ -329,7 +379,7 @@ export default function Admin() {
                         {app.status}
                       </span>
                     </div>
-                    <div className="md:col-span-1 flex justify-end">
+                    <div className="md:col-span-1 flex items-center justify-end gap-3">
                       <select
                         value={app.status}
                         onChange={e => handleStatusChange(app._id, e.target.value)}
@@ -339,6 +389,59 @@ export default function Admin() {
                           <option key={s} value={s}>{s}</option>
                         ))}
                       </select>
+                      <button onClick={() => handleDeleteApplication(app._id)}
+                        className="p-2.5 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+                        title="Delete Application"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Messages Tab */}
+            {activeTab === 'messages' && (
+              <div className="space-y-4">
+                {messages.length === 0 ? (
+                  <div className="text-center text-slate-500 py-16 glass rounded-2xl border border-white/[0.06]">No messages yet.</div>
+                ) : messages.map(msg => (
+                  <div key={msg._id} className={`glass p-6 rounded-2xl border transition-all ${msg.status === 'Unread' ? 'border-blue-500/30 bg-blue-500/5' : 'border-white/[0.07] hover:border-blue-500/20'}`}>
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h4 className="font-bold text-white text-lg">{msg.name}</h4>
+                        <div className="flex gap-3 text-sm text-slate-400 mt-1">
+                          <span>📧 {msg.email}</span>
+                          {msg.phone && <span>📞 {msg.phone}</span>}
+                          {msg.course && <span className="text-blue-400">📚 {msg.course}</span>}
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end gap-2 shrink-0">
+                        <span className="text-xs text-slate-500">{new Date(msg.createdAt).toLocaleDateString()}</span>
+                        <div className="flex items-center gap-2">
+                          <select
+                            value={msg.status}
+                            onChange={e => handleMessageStatusChange(msg._id, e.target.value)}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold border focus:outline-none cursor-pointer ${msg.status === 'Unread'
+                              ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                              : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                              }`}
+                          >
+                            <option value="Unread">Unread</option>
+                            <option value="Read">Read</option>
+                          </select>
+                          <button onClick={() => handleDeleteMessage(msg._id)}
+                            className="p-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors text-xs"
+                            title="Delete Message"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-4 rounded-xl bg-black/20 text-slate-300 text-sm whitespace-pre-wrap border border-white/[0.05]">
+                      {msg.message}
                     </div>
                   </div>
                 ))}
@@ -350,7 +453,7 @@ export default function Admin() {
               <div className="max-w-3xl glass p-8 rounded-3xl border border-white/[0.08]">
                 <h3 className="text-xl font-bold text-white mb-6">Company Information</h3>
                 <p className="text-slate-400 text-sm mb-8">Update the contact details that appear on the website footer and contact page.</p>
-                
+
                 <form onSubmit={handleSaveSettings} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
@@ -378,7 +481,7 @@ export default function Admin() {
                         className="w-full px-4 py-3 bg-slate-900/80 rounded-xl border border-white/[0.1] text-white focus:outline-none focus:border-blue-500/50" />
                     </div>
                   </div>
-                  
+
                   <div>
                     <label className="text-xs text-slate-400 uppercase tracking-wider mb-2 block">Address</label>
                     <textarea value={settings.address}
