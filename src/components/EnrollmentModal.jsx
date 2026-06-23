@@ -7,7 +7,7 @@ export default function EnrollmentModal({ isOpen, onClose, initialType = 'course
     phone: '',
     type: 'course', // 'course' | 'training' | 'placement'
     selection: '',
-    batch: 'Weekday Morning (9 AM - 11 AM)',
+    batch: '10:00 AM - 12:00 PM',
     mode: 'Online',
     message: ''
   });
@@ -22,7 +22,7 @@ export default function EnrollmentModal({ isOpen, onClose, initialType = 'course
         phone: '',
         type: initialType,
         selection: initialName,
-        batch: 'Weekday Morning (9 AM - 11 AM)',
+        batch: '10:00 AM - 12:00 PM',
         mode: 'Online',
         message: ''
       });
@@ -70,10 +70,9 @@ export default function EnrollmentModal({ isOpen, onClose, initialType = 'course
   };
 
   const batches = [
-    'Weekday Morning (9 AM - 11 AM)',
-    'Weekday Evening (7 PM - 9 PM)',
-    'Weekend Fast-track (10 AM - 4 PM)',
-    'Self-paced Study Plan'
+    '10:00 AM – 12:00 PM',
+    '12:00 PM – 1:30 PM',
+    '2:00 PM – 4:00 PM',
   ];
 
   const handleSubmit = (e) => {

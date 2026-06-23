@@ -18,7 +18,10 @@ export default function Footer() {
   const year = new Date().getFullYear();
   const [settings, setSettings] = useState({
     companyName: 'ZOHO IT Solutions',
-    address: 'ZOHO IT Solutions Campus, Hyderabad, Telangana – 500001',
+    addresses: [
+      'Awfis Spero Primus, 1-2 Floor, Primus Building, Door No. SP – 7A, Guindy Industrial Estate, SIDCO Industrial Estate, Chennai, Tamil Nadu 600032',
+      'Olympia Cyberspace, No. 21/22, Alandur Road, Arulayiammanpet 2nd Street, SIDCO Industrial Estate, Guindy, Chennai, Tamil Nadu - 600032'
+    ],
     phone: '+91 93601 98417',
     email: 'info@zohoitsolutions.com',
     workingHours: 'Mon-Sat: 9:30 AM-6:30 PM'
@@ -70,7 +73,7 @@ export default function Footer() {
 
             {/* Social */}
             <div className="flex gap-2">
-              {['📘','🐦','📸','💼','▶️'].map((icon, i) => (
+              {['📘', '🐦', '📸', '💼', '▶️'].map((icon, i) => (
                 <a
                   key={i}
                   href="#"
@@ -120,10 +123,12 @@ export default function Footer() {
           <div>
             <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Contact Info</h4>
             <div className="space-y-4 text-sm text-slate-400">
-              <div className="flex items-start gap-3">
-                <span className="mt-0.5 flex-shrink-0">📍</span>
-                <span>{settings.address}</span>
-              </div>
+              {settings.addresses && settings.addresses.map((addr, idx) => (
+                <div key={idx} className="flex items-start gap-3">
+                  <span className="mt-0.5 flex-shrink-0">{idx === 0 ? '📍' : '🏢'}</span>
+                  <span className="whitespace-pre-line leading-relaxed">{addr}</span>
+                </div>
+              ))}
               <div className="flex items-center gap-3">
                 <span>📞</span>
                 <a href={`tel:${settings.phone.replace(/[^0-9+]/g, '')}`} className="hover:text-blue-400 transition-colors">{settings.phone}</a>

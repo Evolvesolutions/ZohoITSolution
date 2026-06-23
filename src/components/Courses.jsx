@@ -117,14 +117,14 @@ export default function Courses() {
               icon: icons[i % icons.length],
               banner: banners[i % banners.length],
               title: c.title,
-              rating: 4.8, reviews: '1.2k', // Default placeholder
+              rating: 4.8, reviews: '1.2k',
               duration: 'Self-paced', mode: 'Online',
               level: 'All Levels',
               desc: c.description,
               price: `₹${parseFloat(c.price).toLocaleString('en-IN')}`,
-              originalPrice: '',
-              badge: '✨ New',
-              badgeColor: 'bg-blue-500/20 text-blue-300 border-blue-400/30',
+              originalPrice: c.originalPrice ? `₹${parseFloat(c.originalPrice).toLocaleString('en-IN')}` : '',
+              badge: c.originalPrice ? '🔥 Offer' : '✨ New',
+              badgeColor: c.originalPrice ? 'bg-orange-500/20 text-orange-300 border-orange-400/30' : 'bg-blue-500/20 text-blue-300 border-blue-400/30',
               tags: ['Course'],
             };
           });
@@ -139,7 +139,7 @@ export default function Courses() {
     fetchCourses();
   }, []);
 
-  const filters = ['All', 'Beginner', 'Intermediate'];
+  const filters = ['All'];
   const filtered = filter === 'All' ? courses : courses.filter(c => c.level === filter);
 
   const openEnroll = (name = '') => setModal({ open: true, name });
@@ -179,11 +179,10 @@ export default function Courses() {
                 <button
                   key={f}
                   onClick={() => setFilter(f)}
-                  className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
-                    filter === f
-                      ? 'grad-primary text-white shadow-lg shadow-blue-600/30'
-                      : 'text-slate-300 border border-white/10 hover:text-white hover:border-white/25'
-                  }`}
+                  className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${filter === f
+                    ? 'grad-primary text-white shadow-lg shadow-blue-600/30'
+                    : 'text-slate-300 border border-white/10 hover:text-white hover:border-white/25'
+                    }`}
                 >
                   {f}
                 </button>

@@ -19,8 +19,8 @@ export default function Admin() {
   const [stats, setStats] = useState({ users: 0, interns: 0, courses: 0, pendingInterns: 0, acceptedInterns: 0, messages: 0, unreadMessages: 0 });
 
   // Forms
-  const [newCourse, setNewCourse] = useState({ title: '', description: '', price: '' });
-  const [settings, setSettings] = useState({ companyName: '', address: '', phone: '', email: '', workingHours: '' });
+  const [newCourse, setNewCourse] = useState({ title: '', description: '', price: '', originalPrice: '' });
+  const [settings, setSettings] = useState({ companyName: '', addresses: [], phone: '', email: '', workingHours: '' });
 
   // Guard: redirect if not logged in as admin
   useEffect(() => {
@@ -80,7 +80,7 @@ export default function Admin() {
         body: JSON.stringify(newCourse),
       });
       if (res.ok) {
-        setNewCourse({ title: '', description: '', price: '' });
+        setNewCourse({ title: '', description: '', price: '', originalPrice: '' });
         fetchData();
       } else {
         const d = await res.json();
@@ -140,10 +140,16 @@ export default function Admin() {
   const handleSaveSettings = async (e) => {
     e.preventDefault();
     try {
+      // Ensure addresses is an array and filter out empty strings
+      const payload = {
+        ...settings,
+        addresses: settings.addresses.filter(a => a.trim() !== '')
+      };
+      
       const res = await fetch(`${API_URL}/api/settings/company`, {
         method: 'PUT',
         headers: authHeaders,
-        body: JSON.stringify(settings),
+        body: JSON.stringify(payload),
       });
       if (res.ok) {
         alert('Settings saved successfully!');
@@ -308,11 +314,18 @@ export default function Admin() {
                           placeholder="e.g. Advanced Full Stack Development" />
                       </div>
                       <div>
-                        <label className="text-xs text-slate-400 uppercase tracking-wider mb-2 block">Price (₹)</label>
+                        <label className="text-xs text-slate-400 uppercase tracking-wider mb-2 block">Offer Price (₹) <span className="text-blue-400 normal-case tracking-normal font-normal">(Real selling price)</span></label>
                         <input required type="number" value={newCourse.price}
                           onChange={e => setNewCourse({ ...newCourse, price: e.target.value })}
                           className="w-full px-4 py-3 bg-slate-900/80 rounded-xl border border-white/[0.1] text-white text-sm focus:outline-none focus:border-blue-500/50"
                           placeholder="e.g. 25000" />
+                      </div>
+                      <div>
+                        <label className="text-xs text-slate-400 uppercase tracking-wider mb-2 block">Original Price (₹) <span className="text-slate-500 normal-case tracking-normal font-normal">(Strikethrough price)</span></label>
+                        <input type="number" value={newCourse.originalPrice}
+                          onChange={e => setNewCourse({ ...newCourse, originalPrice: e.target.value })}
+                          className="w-full px-4 py-3 bg-slate-900/80 rounded-xl border border-white/[0.1] text-white text-sm focus:outline-none focus:border-blue-500/50"
+                          placeholder="e.g. 45000 (optional)" />
                       </div>
                     </div>
                     <div>
@@ -482,11 +495,53 @@ export default function Admin() {
                     </div>
                   </div>
 
-                  <div>
-                    <label className="text-xs text-slate-400 uppercase tracking-wider mb-2 block">Address</label>
-                    <textarea value={settings.address}
-                      onChange={e => setSettings({ ...settings, address: e.target.value })}
-                      className="w-full px-4 py-3 bg-slate-900/80 rounded-xl border border-white/[0.1] text-white focus:outline-none focus:border-blue-500/50 h-24 resize-none" />
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-xs text-slate-400 uppercase tracking-wider block">Office Locations</label>
+                      <button 
+                        type="button" 
+                        onClick={() => setSettings({ ...settings, addresses: [...(settings.addresses || []), ''] })}
+                        className="text-xs text-blue-400 hover:text-blue-300 font-bold transition-colors bg-blue-500/10 px-3 py-1.5 rounded-lg"
+                      >
+                        + Add Location
+                      </button>
+                    </div>
+                    
+                    {(!settings.addresses || settings.addresses.length === 0) ? (
+                      <div className="text-center py-6 border border-dashed border-white/[0.1] rounded-xl text-slate-500 text-sm">
+                        No locations added yet. Click "+ Add Location" to add one.
+                      </div>
+                    ) : (
+                      settings.addresses.map((addr, index) => (
+                        <div key={index} className="flex gap-3 items-start relative group">
+                          <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/[0.04] border border-white/[0.1] flex items-center justify-center text-xs text-slate-400 mt-2 font-bold">
+                            {index + 1}
+                          </div>
+                          <textarea 
+                            value={addr}
+                            onChange={e => {
+                              const newAddresses = [...settings.addresses];
+                              newAddresses[index] = e.target.value;
+                              setSettings({ ...settings, addresses: newAddresses });
+                            }}
+                            placeholder={`Enter address ${index + 1}...`}
+                            className="w-full px-4 py-3 bg-slate-900/80 rounded-xl border border-white/[0.1] text-white focus:outline-none focus:border-blue-500/50 h-24 resize-none" 
+                          />
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              const newAddresses = [...settings.addresses];
+                              newAddresses.splice(index, 1);
+                              setSettings({ ...settings, addresses: newAddresses });
+                            }}
+                            className="p-2.5 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors mt-2 opacity-0 group-hover:opacity-100 absolute right-2"
+                            title="Remove Location"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      ))
+                    )}
                   </div>
 
                   <div className="flex justify-end pt-4 border-t border-white/[0.05]">
