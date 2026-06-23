@@ -66,7 +66,7 @@ function ProgressBar({ label, pct }) {
 
 export default function Internship() {
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '', college: '', domain: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', college: '', domain: '', type: 'internship' });
   const [submitted, setSubmitted] = useState(false);
 
   const handleApply = async (e) => {
@@ -85,7 +85,7 @@ export default function Internship() {
         setTimeout(() => {
           setSubmitted(false);
           setShowForm(false);
-          setFormData({ name: '', email: '', phone: '', college: '', domain: '' });
+          setFormData({ name: '', email: '', phone: '', college: '', domain: '', type: 'internship' });
         }, 3000);
       } else {
         alert("Failed to submit application. Please try again.");

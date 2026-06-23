@@ -20,6 +20,7 @@ export default function Admin() {
 
   // Forms
   const [newCourse, setNewCourse] = useState({ title: '', description: '', price: '', originalPrice: '' });
+  const [editingCourseId, setEditingCourseId] = useState(null);
   const [settings, setSettings] = useState({ companyName: '', addresses: [], phone: '', email: '', workingHours: '' });
 
   // Guard: redirect if not logged in as admin
@@ -74,20 +75,29 @@ export default function Admin() {
   const handleAddCourse = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${API_URL}/api/courses`, {
-        method: 'POST',
+      const url = editingCourseId 
+        ? `${API_URL}/api/courses/${editingCourseId}`
+        : `${API_URL}/api/courses`;
+        
+      const method = editingCourseId ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method,
         headers: authHeaders,
         body: JSON.stringify(newCourse),
       });
+
       if (res.ok) {
         setNewCourse({ title: '', description: '', price: '', originalPrice: '' });
+        setEditingCourseId(null);
         fetchData();
+        alert(editingCourseId ? 'Course updated successfully!' : 'Course added successfully!');
       } else {
         const d = await res.json();
         alert(d.message);
       }
     } catch (error) {
-      alert('Failed to add course');
+      alert('Failed to save course');
     }
   };
 
@@ -205,7 +215,10 @@ export default function Admin() {
           {[
             { id: 'dashboard', label: 'Dashboard', icon: '📊' },
             { id: 'courses', label: 'Courses', icon: '📚' },
-            { id: 'applications', label: 'Intern Applications', icon: '📋' },
+            { id: 'course-applications', label: 'Course Applications', icon: '🎓' },
+            { id: 'training-applications', label: 'Training Applications', icon: '💻' },
+            { id: 'internship-applications', label: 'Internship Applications', icon: '💼' },
+            { id: 'placement-applications', label: 'Placement Applications', icon: '🏆' },
             { id: 'messages', label: 'Messages', icon: '📨' },
             { id: 'settings', label: 'Company Info', icon: '⚙️' },
           ].map(tab => (
@@ -303,7 +316,9 @@ export default function Admin() {
               <div className="space-y-10">
                 {/* Add Course Form (Full Width) */}
                 <div className="glass p-8 rounded-3xl border border-white/[0.08]">
-                  <h3 className="text-xl font-bold text-white mb-6">➕ Add New Course</h3>
+                  <h3 className="text-xl font-bold text-white mb-6">
+                    {editingCourseId ? '✏️ Edit Course' : '➕ Add New Course'}
+                  </h3>
                   <form onSubmit={handleAddCourse} className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-6">
                       <div>
@@ -335,9 +350,19 @@ export default function Admin() {
                         className="w-full px-4 py-3 bg-slate-900/80 rounded-xl border border-white/[0.1] text-white text-sm focus:outline-none focus:border-blue-500/50 h-32 resize-none"
                         placeholder="Detailed description of what the course covers..." />
                     </div>
-                    <div className="flex justify-end pt-2">
+                    <div className="flex justify-end gap-3 pt-2">
+                      {editingCourseId && (
+                        <button type="button" 
+                          onClick={() => {
+                            setEditingCourseId(null);
+                            setNewCourse({ title: '', description: '', price: '', originalPrice: '' });
+                          }}
+                          className="px-6 py-3 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-700 transition-all">
+                          Cancel
+                        </button>
+                      )}
                       <button type="submit" className="px-10 py-3 grad-primary text-white font-bold rounded-xl hover:-translate-y-0.5 transition-all shadow-lg shadow-blue-500/20">
-                        Publish Course
+                        {editingCourseId ? 'Update Course' : 'Publish Course'}
                       </button>
                     </div>
                   </form>
@@ -355,14 +380,29 @@ export default function Admin() {
                           <h4 className="font-bold text-white text-lg mb-1">{course.title}</h4>
                           <p className="text-slate-400 text-sm line-clamp-2">{course.description}</p>
                         </div>
-                        <div className="flex flex-col items-end gap-3 shrink-0">
-                          <span className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                        <div className="flex flex-col items-end gap-2 shrink-0">
+                          <span className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 mb-1">
                             ₹{Number(course.price).toLocaleString('en-IN')}
                           </span>
-                          <button onClick={() => handleDeleteCourse(course._id)}
-                            className="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-xs font-bold hover:bg-red-500/20 transition-colors opacity-0 group-hover:opacity-100">
-                            Delete
-                          </button>
+                          <div className="flex gap-2">
+                            <button onClick={() => {
+                                setEditingCourseId(course._id);
+                                setNewCourse({ 
+                                  title: course.title, 
+                                  description: course.description, 
+                                  price: course.price, 
+                                  originalPrice: course.originalPrice || '' 
+                                });
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                              }}
+                              className="px-3 py-1.5 rounded-lg bg-blue-500/10 text-blue-400 text-xs font-bold hover:bg-blue-500/20 transition-colors opacity-0 group-hover:opacity-100">
+                              Edit
+                            </button>
+                            <button onClick={() => handleDeleteCourse(course._id)}
+                              className="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 text-xs font-bold hover:bg-red-500/20 transition-colors opacity-0 group-hover:opacity-100">
+                              Delete
+                            </button>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -371,47 +411,52 @@ export default function Admin() {
               </div>
             )}
 
-            {/* Applications Tab */}
-            {activeTab === 'applications' && (
-              <div className="space-y-4">
-                {applications.length === 0 ? (
-                  <div className="text-center text-slate-500 py-16 glass rounded-2xl border border-white/[0.06]">No applications yet.</div>
-                ) : applications.map(app => (
-                  <div key={app._id} className="glass p-6 rounded-2xl border border-white/[0.07] hover:border-blue-500/20 transition-all grid md:grid-cols-4 gap-6 items-center">
-                    <div className="md:col-span-1">
-                      <h4 className="font-bold text-white text-lg">{app.name}</h4>
-                      <p className="text-sm text-slate-400 mt-1">{app.email}</p>
-                      <p className="text-sm text-slate-500">{app.phone}</p>
-                    </div>
-                    <div className="md:col-span-1">
-                      <p className="text-sm text-white font-medium">{app.college || '—'}</p>
-                      <p className="text-xs text-blue-400 mt-1 uppercase tracking-wider font-bold">{app.domain || '—'}</p>
-                    </div>
-                    <div className="md:col-span-1">
-                      <span className={`px-4 py-1.5 rounded-full border text-xs font-bold ${statusColor(app.status)}`}>
-                        {app.status}
-                      </span>
-                    </div>
-                    <div className="md:col-span-1 flex items-center justify-end gap-3">
-                      <select
-                        value={app.status}
-                        onChange={e => handleStatusChange(app._id, e.target.value)}
-                        className="px-4 py-2.5 bg-slate-900/80 rounded-xl text-sm border border-white/[0.1] text-white focus:outline-none focus:border-blue-500/50 cursor-pointer font-medium"
-                      >
-                        {['Pending', 'Reviewed', 'Accepted', 'Rejected'].map(s => (
-                          <option key={s} value={s}>{s}</option>
-                        ))}
-                      </select>
-                      <button onClick={() => handleDeleteApplication(app._id)}
-                        className="p-2.5 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
-                        title="Delete Application"
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            {/* Course Applications Tab */}
+            {activeTab === 'course-applications' && (
+              <ApplicationsPanel
+                title="🎓 Course Applications"
+                subtitle="Students who enrolled for courses"
+                applications={applications.filter(a => a.type === 'course')}
+                handleStatusChange={handleStatusChange}
+                handleDeleteApplication={handleDeleteApplication}
+                accentColor="blue"
+              />
+            )}
+
+            {/* Training Applications Tab */}
+            {activeTab === 'training-applications' && (
+              <ApplicationsPanel
+                title="💻 Training Applications"
+                subtitle="Students who applied for training programs"
+                applications={applications.filter(a => a.type === 'training')}
+                handleStatusChange={handleStatusChange}
+                handleDeleteApplication={handleDeleteApplication}
+                accentColor="violet"
+              />
+            )}
+
+            {/* Internship Applications Tab */}
+            {activeTab === 'internship-applications' && (
+              <ApplicationsPanel
+                title="💼 Internship Applications"
+                subtitle="Students who applied for internship programs"
+                applications={applications.filter(a => a.type === 'internship' || (!a.type && a.domain))}
+                handleStatusChange={handleStatusChange}
+                handleDeleteApplication={handleDeleteApplication}
+                accentColor="rose"
+              />
+            )}
+
+            {/* Placement Applications Tab */}
+            {activeTab === 'placement-applications' && (
+              <ApplicationsPanel
+                title="🏆 Placement Applications"
+                subtitle="Students who applied for placement support"
+                applications={applications.filter(a => a.type === 'placement')}
+                handleStatusChange={handleStatusChange}
+                handleDeleteApplication={handleDeleteApplication}
+                accentColor="emerald"
+              />
             )}
 
             {/* Messages Tab */}
@@ -556,6 +601,82 @@ export default function Admin() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function ApplicationsPanel({ title, subtitle, applications, handleStatusChange, handleDeleteApplication, accentColor }) {
+  const statusColor = (status) => {
+    switch (status) {
+      case 'Accepted': return 'text-emerald-400 border-emerald-400/30 bg-emerald-400/10';
+      case 'Rejected': return 'text-red-400 border-red-400/30 bg-red-400/10';
+      case 'Reviewed': return 'text-blue-400 border-blue-400/30 bg-blue-400/10';
+      default: return 'text-amber-400 border-amber-400/30 bg-amber-400/10';
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="mb-8">
+        <h3 className="text-xl font-bold text-white mb-1">{title}</h3>
+        <p className="text-sm text-slate-400">{subtitle}</p>
+      </div>
+
+      {applications.length === 0 ? (
+        <div className="text-center text-slate-500 py-16 glass rounded-2xl border border-white/[0.06]">No applications yet.</div>
+      ) : applications.map(app => (
+        <div key={app._id} className={`glass p-6 rounded-2xl border border-white/[0.07] hover:border-${accentColor}-500/30 transition-all`}>
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h4 className="font-bold text-white text-lg flex items-center gap-2">
+                {app.name}
+                <span className={`px-3 py-1 rounded-full border text-[10px] font-bold ${statusColor(app.status)}`}>
+                  {app.status}
+                </span>
+              </h4>
+              <div className="flex gap-4 text-sm text-slate-400 mt-2">
+                <span>📧 {app.email}</span>
+                <span>📞 {app.phone}</span>
+                {app.batch && <span className="text-amber-400">🕒 {app.batch}</span>}
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <select
+                value={app.status}
+                onChange={e => handleStatusChange(app._id, e.target.value)}
+                className={`px-4 py-2.5 bg-slate-900/80 rounded-xl text-sm border border-white/[0.1] text-white focus:outline-none focus:border-${accentColor}-500/50 cursor-pointer font-medium`}
+              >
+                {['Pending', 'Reviewed', 'Accepted', 'Rejected'].map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+              <button onClick={() => handleDeleteApplication(app._id)}
+                className="p-2.5 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+                title="Delete Application"
+              >
+                🗑️
+              </button>
+            </div>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-4 mt-4 p-4 rounded-xl bg-white/[0.02] border border-white/[0.05]">
+            <div>
+              <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Selected Program / Domain</p>
+              <p className={`text-sm font-bold text-${accentColor}-400`}>{app.selection || app.domain || '—'}</p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">{app.college ? 'College / University' : 'Preferred Mode'}</p>
+              <p className="text-sm font-bold text-white">{app.college || app.mode || '—'}</p>
+            </div>
+            {app.message && (
+              <div className="md:col-span-2 mt-2">
+                <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Additional Notes</p>
+                <p className="text-sm text-slate-300 bg-black/20 p-3 rounded-lg border border-white/5">{app.message}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

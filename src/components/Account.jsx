@@ -97,9 +97,9 @@ export default function Account() {
             <div className="glass rounded-2xl p-10 border border-white/[0.06] text-center">
               <div className="text-5xl mb-4">📄</div>
               <h3 className="text-xl font-bold text-white mb-2">No Applications Yet</h3>
-              <p className="text-slate-400 mb-6">You haven't applied for any internships yet.</p>
+              <p className="text-slate-400 mb-6">You haven't applied for any courses or programs yet.</p>
               <button 
-                onClick={() => navigate('/internship')}
+                onClick={() => navigate('/courses')}
                 className="px-6 py-2.5 grad-primary text-white font-bold rounded-xl hover:-translate-y-0.5 transition-all"
               >
                 Apply Now
@@ -110,14 +110,18 @@ export default function Account() {
               {applications.map(app => (
                 <div key={app._id} className="glass rounded-2xl p-6 border border-white/[0.08] hover:border-blue-500/30 transition-colors flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <div>
-                    <h4 className="text-lg font-bold text-white mb-1">Internship Application</h4>
+                    <h4 className="text-lg font-bold text-white mb-1 capitalize">
+                      {app.type || 'Internship'} Application
+                    </h4>
                     <p className="text-sm text-slate-400">Applied on: {new Date(app.submittedAt).toLocaleDateString()}</p>
-                    <div className="mt-3 flex gap-4 text-sm text-slate-300">
-                      <span><span className="text-slate-500">Domain:</span> {app.domain}</span>
-                      <span><span className="text-slate-500">College:</span> {app.college}</span>
+                    <div className="mt-3 flex flex-wrap gap-4 text-sm text-slate-300">
+                      <span><span className="text-slate-500">Program:</span> {app.selection || app.domain || 'N/A'}</span>
+                      {app.mode && <span><span className="text-slate-500">Mode:</span> {app.mode}</span>}
+                      {app.batch && <span><span className="text-slate-500">Batch:</span> {app.batch}</span>}
+                      {app.college && <span><span className="text-slate-500">College:</span> {app.college}</span>}
                     </div>
                   </div>
-                  <div>
+                  <div className="flex flex-col items-end gap-2">
                     <span className={`px-4 py-1.5 rounded-full border text-sm font-bold ${statusColor(app.status)}`}>
                       {app.status}
                     </span>

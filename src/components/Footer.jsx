@@ -71,17 +71,31 @@ export default function Footer() {
               professionals since 2014 with industry-leading courses and 100% placement support.
             </p>
 
-            {/* Social */}
+            {/* Social - Instagram only */}
             <div className="flex gap-2">
-              {['📘', '🐦', '📸', '💼', '▶️'].map((icon, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  className="w-9 h-9 rounded-lg glass border border-white/[0.08] flex items-center justify-center text-sm hover:border-blue-500/40 hover:bg-blue-500/10 hover:-translate-y-1 transition-all duration-200"
-                >
-                  {icon}
-                </a>
-              ))}
+              <a
+                href="https://www.instagram.com/zoho-it-solution/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Follow us on Instagram"
+                className="w-9 h-9 rounded-lg border border-white/[0.08] flex items-center justify-center hover:border-pink-500/50 hover:bg-pink-500/10 hover:-translate-y-1 transition-all duration-200"
+                style={{ background: 'rgba(255,255,255,0.03)' }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="url(#ig-grad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <defs>
+                    <linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#f09433"/>
+                      <stop offset="25%" stopColor="#e6683c"/>
+                      <stop offset="50%" stopColor="#dc2743"/>
+                      <stop offset="75%" stopColor="#cc2366"/>
+                      <stop offset="100%" stopColor="#bc1888"/>
+                    </linearGradient>
+                  </defs>
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                  <circle cx="12" cy="12" r="4"/>
+                  <circle cx="17.5" cy="6.5" r="1.5" fill="url(#ig-grad)" stroke="none"/>
+                </svg>
+              </a>
             </div>
           </div>
 

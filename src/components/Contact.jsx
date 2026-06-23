@@ -2,11 +2,7 @@ import { useState, useEffect } from 'react';
 import { API_URL } from '../config';
 
 const socialLinks = [
-  { icon: '📘', label: 'Facebook', href: '#' },
-  { icon: '🐦', label: 'Twitter', href: '#' },
-  { icon: '📸', label: 'Instagram', href: '#' },
-  { icon: '💼', label: 'LinkedIn', href: '#' },
-  { icon: '▶️', label: 'YouTube', href: '#' },
+  { label: 'Instagram', href: 'https://www.instagram.com/zoho-it-solution/' },
 ];
 
 export default function Contact() {
@@ -123,20 +119,32 @@ export default function Contact() {
               </div>
             ))}
 
-            {/* Social */}
+            {/* Social - Instagram only */}
             <div>
               <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Follow Us</p>
               <div className="flex gap-2 flex-wrap">
-                {socialLinks.map((s, i) => (
-                  <a
-                    key={i}
-                    href={s.href}
-                    aria-label={s.label}
-                    className="w-11 h-11 rounded-xl glass border border-white/10 flex items-center justify-center text-lg hover:border-blue-500/40 hover:bg-blue-500/10 hover:-translate-y-1 transition-all duration-200"
-                  >
-                    {s.icon}
-                  </a>
-                ))}
+                <a
+                  href="https://www.instagram.com/zoho-it-solution/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Follow us on Instagram"
+                  className="w-11 h-11 rounded-xl glass border border-white/10 flex items-center justify-center hover:border-pink-500/50 hover:bg-pink-500/10 hover:-translate-y-1 transition-all duration-200"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="url(#ig-grad-contact)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <defs>
+                      <linearGradient id="ig-grad-contact" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#f09433"/>
+                        <stop offset="25%" stopColor="#e6683c"/>
+                        <stop offset="50%" stopColor="#dc2743"/>
+                        <stop offset="75%" stopColor="#cc2366"/>
+                        <stop offset="100%" stopColor="#bc1888"/>
+                      </linearGradient>
+                    </defs>
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                    <circle cx="12" cy="12" r="4"/>
+                    <circle cx="17.5" cy="6.5" r="1.5" fill="url(#ig-grad-contact)" stroke="none"/>
+                  </svg>
+                </a>
               </div>
             </div>
 

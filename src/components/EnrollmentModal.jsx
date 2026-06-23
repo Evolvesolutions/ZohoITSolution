@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_URL } from '../config';
 
 export default function EnrollmentModal({ isOpen, onClose, initialType = 'course', initialName = '' }) {
   const [form, setForm] = useState({
@@ -12,6 +13,8 @@ export default function EnrollmentModal({ isOpen, onClose, initialType = 'course
     message: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   // Pre-fill fields when modal opens
   useEffect(() => {
@@ -27,6 +30,8 @@ export default function EnrollmentModal({ isOpen, onClose, initialType = 'course
         message: ''
       });
       setSubmitted(false);
+      setLoading(false);
+      setError('');
       // Disable body scroll when modal is open
       document.body.style.overflow = 'hidden';
     } else {
@@ -75,9 +80,27 @@ export default function EnrollmentModal({ isOpen, onClose, initialType = 'course
     '2:00 PM – 4:00 PM',
   ];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch(`${API_URL}/api/applications`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        const data = await res.json();
+        setError(data.message || 'Submission failed. Please try again.');
+      }
+    } catch {
+      setError('Network error. Please check your connection and try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -285,12 +308,19 @@ export default function EnrollmentModal({ isOpen, onClose, initialType = 'course
                 />
               </div>
 
+               {error && (
+                <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+                  ⚠️ {error}
+                </div>
+              )}
+
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full py-4 mt-2 grad-primary text-white font-bold rounded-xl text-base shadow-lg shadow-blue-600/25 hover:shadow-blue-600/50 hover:-translate-y-0.5 transition-all duration-300"
+                disabled={loading}
+                className="w-full py-4 mt-2 grad-primary text-white font-bold rounded-xl text-base shadow-lg shadow-blue-600/25 hover:shadow-blue-600/50 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                🚀 Confirm & Register Enrollment
+                {loading ? '⏳ Submitting...' : '🚀 Confirm & Register Enrollment'}
               </button>
             </form>
           )}
