@@ -51,9 +51,7 @@ export default function Navbar() {
           className="flex items-center gap-3 group"
           onClick={() => setMenuOpen(false)}
         >
-          <div className="w-10 h-10 grad-primary rounded-xl flex items-center justify-center text-white font-black text-lg shadow-lg shadow-blue-600/30 group-hover:shadow-blue-600/50 transition-all duration-300">
-            Z
-          </div>
+          <img src="/logo.png" alt="ZOHO IT Solutions Logo" className="w-13 h-13 object-contain bg-white rounded-xl" />
           <div className="flex flex-col leading-tight">
             <span className="font-extrabold text-slate-100 text-base tracking-tight">ZOHO IT</span>
             <span className="text-[10px] text-blue-600 tracking-widest uppercase font-medium">Solutions</span>

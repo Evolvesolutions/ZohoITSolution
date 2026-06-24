@@ -58,12 +58,10 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 grad-primary rounded-xl flex items-center justify-center text-white font-black text-lg shadow-lg shadow-blue-600/30">
-                Z
-              </div>
+              <img src="/logo.png" alt="ZOHO IT Solutions Logo" className="w-30 h-auto object-contain bg-white rounded-xl shadow-lg p-1" />
               <div className="leading-tight">
-                <div className="font-extrabold text-white text-base uppercase tracking-wider">{settings.companyName.split(' ')[0] || 'ZOHO IT'}</div>
-                <div className="text-[10px] text-blue-400 tracking-widest uppercase font-medium">{settings.companyName.substring(settings.companyName.indexOf(' ') + 1) || 'Solutions'}</div>
+                <div className="font-extrabold text-black text-xl uppercase tracking-wider">{settings.companyName.split(' ')[0] || 'ZOHO IT'}</div>
+                <div className="text-xs text-blue-400 tracking-widest uppercase font-medium mt-1">{settings.companyName.substring(settings.companyName.indexOf(' ') + 1) || 'Solutions'}</div>
               </div>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed mb-6 max-w-xs">
@@ -71,10 +69,10 @@ export default function Footer() {
               professionals since 2014 with industry-leading courses and 100% placement support.
             </p>
 
-            {/* Social - Instagram only */}
+            {/* Social Links */}
             <div className="flex gap-2">
               <a
-                href="https://www.instagram.com/zoho-it-solution/"
+                href="https://www.instagram.com/zoho_it_solution?igsh=MWRlMjZ0MGdpeTU4aw=="
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Follow us on Instagram"
@@ -94,6 +92,18 @@ export default function Footer() {
                   <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
                   <circle cx="12" cy="12" r="4"/>
                   <circle cx="17.5" cy="6.5" r="1.5" fill="url(#ig-grad)" stroke="none"/>
+                </svg>
+              </a>
+              <a
+                href="https://www.facebook.com/share/197aPnLsuD/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Follow us on Facebook"
+                className="w-9 h-9 rounded-lg border border-white/[0.08] flex items-center justify-center hover:border-blue-500/50 hover:bg-blue-500/10 hover:-translate-y-1 transition-all duration-200"
+                style={{ background: 'rgba(255,255,255,0.03)' }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" className="text-blue-500">
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
                 </svg>
               </a>
             </div>
