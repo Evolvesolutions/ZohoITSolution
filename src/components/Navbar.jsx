@@ -8,7 +8,7 @@ const navItems = [
   { label: 'Internship', path: '/internship' },
   { label: 'Placement',  path: '/placement' },
   { label: 'Courses',    path: '/courses' },
-  { label: 'Contact',    path: '/contact' },
+  { label: 'Software Development', path: '/software-development' },
 ];
 
 export default function Navbar() {
@@ -59,14 +59,14 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Nav */}
-        <ul className="hidden lg:flex items-center gap-1">
+        <ul className="hidden lg:flex items-center gap-0.5">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <li key={item.path}>
                 <Link
                   to={item.path}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 block ${
+                  className={`px-3 py-2 rounded-full text-[13px] font-medium transition-all duration-200 block whitespace-nowrap ${
                     isActive
                       ? 'text-blue-400 bg-blue-500/10'
                       : 'text-slate-400 hover:text-white hover:bg-white/5'
@@ -80,22 +80,22 @@ export default function Navbar() {
         </ul>
 
         {/* CTA */}
-        <div className="hidden lg:flex items-center gap-3">
+        <div className="hidden lg:flex items-center gap-2">
           <Link
             to="/contact"
-            className="px-5 py-2.5 text-sm font-semibold text-slate-300 border border-white/15 rounded-full hover:border-white/40 hover:text-white backdrop-blur-sm transition-all duration-200"
+            className="px-4 py-2 text-[13px] font-semibold text-slate-300 border border-white/15 rounded-full hover:border-white/40 hover:text-white backdrop-blur-sm transition-all duration-200 whitespace-nowrap"
           >
             Contact Us
           </Link>
           <button
             onClick={handleAuthClick}
-            className="px-5 py-2.5 text-sm font-semibold text-slate-300 border border-white/15 rounded-full hover:border-white/40 hover:text-white backdrop-blur-sm transition-all duration-200"
+            className="px-4 py-2 text-[13px] font-semibold text-slate-300 border border-white/15 rounded-full hover:border-white/40 hover:text-white backdrop-blur-sm transition-all duration-200 whitespace-nowrap"
           >
             {isAdmin ? '⚙️ Dashboard' : isLoggedIn ? '👤 Account' : '🔐 Login'}
           </button>
           <Link
             to="/courses"
-            className="px-5 py-2.5 text-sm font-semibold text-white grad-primary rounded-full shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 hover:-translate-y-0.5 transition-all duration-200"
+            className="px-4 py-2 text-[13px] font-semibold text-white grad-primary rounded-full shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 hover:-translate-y-0.5 transition-all duration-200 whitespace-nowrap"
           >
             Enroll Now
           </Link>

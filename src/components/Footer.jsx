@@ -9,6 +9,7 @@ const quickLinks = [
   { label: 'Internship', path: '/internship' },
   { label: 'Placement', path: '/placement' },
   { label: 'Courses', path: '/courses' },
+  { label: 'Software Development', path: '/software-development' },
   { label: 'Contact', path: '/contact' },
 ];
 

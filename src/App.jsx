@@ -2,15 +2,20 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Outlet } from 'react-router-dom';
 import './App.css';
 import Navbar from './components/Navbar';
+import SoftwareNavbar from './components/SoftwareNavbar';
 import Hero from './components/Hero';
 import Marquee from './components/Marquee';
 import About from './components/About';
+import SoftwareContact from './components/SoftwareContact';
+import SoftwareAbout from './components/SoftwareAbout';
+import SoftwareServices from './components/SoftwareServices';
 
 import WhyChooseUs from './components/WhyChooseUs';
 import Training from './components/Training';
 import Internship from './components/Internship';
 import Placement from './components/Placement';
 import Courses from './components/Courses';
+import SoftwareDevelopment from './components/SoftwareDevelopment';
 import Testimonials from './components/Testimonials';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
@@ -110,6 +115,23 @@ function MainLayout() {
   );
 }
 
+// Layout for Software Development section (different Navbar)
+function SoftwareLayout() {
+  return (
+    <div className="min-h-screen bg-slate-900 flex flex-col justify-between">
+      <div>
+        <SoftwareNavbar />
+        <main>
+          <Outlet />
+        </main>
+      </div>
+      <Footer />
+      <ScrollToTopButton />
+      <WhatsAppButton />
+    </div>
+  );
+}
+
 function App() {
   return (
     <Router>
@@ -129,6 +151,14 @@ function App() {
           <Route path="/courses" element={<SubpageWrapper><Courses /></SubpageWrapper>} />
           <Route path="/contact" element={<SubpageWrapper><Contact /></SubpageWrapper>} />
           <Route path="/account" element={<SubpageWrapper><Account /></SubpageWrapper>} />
+        </Route>
+
+        {/* Software Development Pages — with SoftwareNavbar */}
+        <Route element={<SoftwareLayout />}>
+          <Route path="/software-development" element={<SoftwareDevelopment />} />
+          <Route path="/software-development/about" element={<SubpageWrapper><SoftwareAbout /></SubpageWrapper>} />
+          <Route path="/software-development/services" element={<SubpageWrapper><SoftwareServices /></SubpageWrapper>} />
+          <Route path="/software-development/contact" element={<SubpageWrapper><SoftwareContact /></SubpageWrapper>} />
         </Route>
       </Routes>
     </Router>
