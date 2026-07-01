@@ -9,6 +9,7 @@ import About from './components/About';
 import SoftwareContact from './components/SoftwareContact';
 import SoftwareAbout from './components/SoftwareAbout';
 import SoftwareServices from './components/SoftwareServices';
+import SoftwareProjects from './components/SoftwareProjects';
 
 import WhyChooseUs from './components/WhyChooseUs';
 import Training from './components/Training';
@@ -49,9 +50,8 @@ function ScrollToTopButton() {
       id="scroll-to-top"
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       aria-label="Scroll to top"
-      className={`fixed bottom-8 right-8 z-50 w-12 h-12 grad-primary rounded-full flex items-center justify-center text-white shadow-lg shadow-blue-600/40 hover:shadow-blue-600/60 hover:-translate-y-1 transition-all duration-300 ${
-        visible ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'
-      }`}
+      className={`fixed bottom-8 right-8 z-50 w-12 h-12 grad-primary rounded-full flex items-center justify-center text-white shadow-lg shadow-blue-600/40 hover:shadow-blue-600/60 hover:-translate-y-1 transition-all duration-300 ${visible ? 'opacity-100 scale-100' : 'opacity-0 scale-75 pointer-events-none'
+        }`}
     >
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
@@ -158,6 +158,7 @@ function App() {
           <Route path="/software-development" element={<SoftwareDevelopment />} />
           <Route path="/software-development/about" element={<SubpageWrapper><SoftwareAbout /></SubpageWrapper>} />
           <Route path="/software-development/services" element={<SubpageWrapper><SoftwareServices /></SubpageWrapper>} />
+          <Route path="/software-development/projects" element={<SubpageWrapper><SoftwareProjects /></SubpageWrapper>} />
           <Route path="/software-development/contact" element={<SubpageWrapper><SoftwareContact /></SubpageWrapper>} />
         </Route>
       </Routes>
